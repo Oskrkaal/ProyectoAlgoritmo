@@ -1,0 +1,4 @@
+Carne	Nombres	Apellidos	Carrera	Telefono	Direccion	Fecha/Hora
+0001	Eduardo 	Caal	Sistemas	87654321	Coban	18/10/2026 16:46:23
+0002	Cesia	Caal	Medicina	43567357	Coban	18/10/2026 16:46:46
+0004	jose	Esparta	Civil	34527568	Carcha	18/10/2026 17:11:01
