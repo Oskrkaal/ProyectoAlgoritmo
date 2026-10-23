@@ -3,9 +3,30 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
+#include <map>
 #include <sstream>
+#include <vector>
 
 using namespace std;
+
+// Base de datos global de la malla curricular para Ingeniería en Sistemas
+map<int, vector<string>> obtenerMallaCurricular() {
+  map<int, vector<string>> malla;
+  malla[1] = {"Contabilidad I", "Desarrollo Humano y Profesional",
+              "Introduccion a los Sistemas de Computo", "Logica de Sistemas",
+              "Metodologia de la Investigacion"}; //[cite: 1]
+  malla[2] = {"Algebra Lineal", "Algoritmos", "Contabilidad II",
+              "Matematica Discreta", "Precalculo"}; //[cite: 1]
+  malla[3] = {"Calculo I", "Derecho Informatico", "Fisica I",
+              "Proceso Administrativo", "Programacion I"}; //[cite: 1]
+  malla[4] = {"Calculo II", "Estadistica I", "Fisica II", "Microeconomia",
+              "Programacion II"}; //[cite: 1]
+  malla[5] = {"Electronica Analogica", "Emprendedores de Negocios",
+              "Estadistica II", "Metodos Numericos",
+              "Programacion III"}; //[cite: 1]
+  return malla;
+}
 
 // Definición de las variables globales
 Estudiante registrar[TAM];
@@ -16,13 +37,14 @@ void agregarAlArchivo() {
   ofstream archivo(ARCHIVO, ios::app);
   if (!archivo.is_open()) {
     archivo.open(ARCHIVO);
-    archivo << "Carne\tNombres\tApellidos\tCarrera\tTelefono\tDireccion\tFecha/"
-               "Hora\n";
+    // Se añaden Semestre y Cursos al encabezado
+    archivo << "Carne\tNombres\tApellidos\tCarrera\tTelefono\tDireccion\tSemest"
+               "re\tCursos\tFecha/Hora\n";
   } else {
     archivo.seekp(0, ios::end);
     if (archivo.tellp() == 0) {
-      archivo << "Carne\tNombres\tApellidos\tCarrera\tTelefono\tDireccion\tFech"
-                 "a/Hora\n";
+      archivo << "Carne\tNombres\tApellidos\tCarrera\tTelefono\tDireccion\tSeme"
+                 "stre\tCursos\tFecha/Hora\n";
     }
   }
 
@@ -30,7 +52,8 @@ void agregarAlArchivo() {
   archivo << registrar[idx].carne << "\t" << registrar[idx].nombre << "\t"
           << registrar[idx].apellido << "\t" << registrar[idx].carrera << "\t"
           << registrar[idx].telefono << "\t" << registrar[idx].direccion << "\t"
-          << registrar[idx].fechaHora << "\n";
+          << registrar[idx].semestre << "\t" << registrar[idx].cursosAsignados
+          << "\t" << registrar[idx].fechaHora << "\n";
 
   archivo.close();
 }
@@ -49,7 +72,8 @@ void cargarDesdeArchivo() {
       continue;
 
     istringstream ss(linea);
-    string carne, nombres, apellidos, carrera, telefono, direccion, fecha;
+    string carne, nombres, apellidos, carrera, telefono, direccion, semestreStr,
+        cursos, fecha;
 
     getline(ss, carne, '\t');
     getline(ss, nombres, '\t');
@@ -57,6 +81,8 @@ void cargarDesdeArchivo() {
     getline(ss, carrera, '\t');
     getline(ss, telefono, '\t');
     getline(ss, direccion, '\t');
+    getline(ss, semestreStr, '\t');
+    getline(ss, cursos, '\t');
     getline(ss, fecha);
 
     if (contadorAlumnos >= TAM)
@@ -68,7 +94,11 @@ void cargarDesdeArchivo() {
     registrar[contadorAlumnos].carrera = carrera;
     registrar[contadorAlumnos].telefono = telefono;
     registrar[contadorAlumnos].direccion = direccion;
+    registrar[contadorAlumnos].semestre =
+        semestreStr.empty() ? 0 : stoi(semestreStr);
+    registrar[contadorAlumnos].cursosAsignados = cursos;
     registrar[contadorAlumnos].fechaHora = fecha;
+
     contadorAlumnos++;
   }
   archivo.close();
@@ -76,6 +106,7 @@ void cargarDesdeArchivo() {
 
 void ingresarAlumno() {
   string opcion;
+  map<int, vector<string>> mallaSistemas = obtenerMallaCurricular();
 
   do {
     system("clear");
@@ -90,11 +121,11 @@ void ingresarAlumno() {
     cout << "+++++++++++++++++++++++++++++ CARRERAS DISPONIBLES "
             "+++++++++++++++++++++++++++++"
          << endl;
-
-    cout << "1. Sistemas \t 2. Medicina \t 3. "
-            "Arquitectura \t 4. Civil \t 5. Derecho\n\n"
+    cout << "1. Sistemas \t 2. Medicina \t 3. Arquitectura \t 4. Civil \t 5. "
+            "Derecho\n\n"
          << endl;
-    // Generación automática del carné (0001, 0002, etc.)
+
+    // Generación automática del carné
     ostringstream autoCarne;
     autoCarne << setfill('0') << setw(4) << (contadorAlumnos + 1);
     registrar[contadorAlumnos].carne = autoCarne.str();
@@ -112,6 +143,32 @@ void ingresarAlumno() {
 
     cout << "Carrera: ";
     getline(cin, registrar[contadorAlumnos].carrera);
+
+    // --- ASIGNACIÓN DE SEMESTRE Y CURSOS ---
+    int semestreIngresado;
+    cout << "Semestre a inscribir (1-10): ";
+    while (!(cin >> semestreIngresado) || semestreIngresado < 1 ||
+           semestreIngresado > 10) {
+      cout << "[ERROR] Semestre no valido. Ingrese un valor entre 1 y 10: ";
+      cin.clear();
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    registrar[contadorAlumnos].semestre = semestreIngresado;
+
+    // Procesar cursos a un solo string para guardarlo en el archivo .txt
+    string cursosCadena = "";
+    if (mallaSistemas.find(semestreIngresado) != mallaSistemas.end()) {
+      vector<string> cursos = mallaSistemas[semestreIngresado];
+      for (size_t i = 0; i < cursos.size(); ++i) {
+        cursosCadena += cursos[i];
+        if (i < cursos.size() - 1)
+          cursosCadena += ", ";
+      }
+    } else {
+      cursosCadena = "Pendiente de asignar (Semestre sin mapear)";
+    }
+    registrar[contadorAlumnos].cursosAsignados = cursosCadena;
+    // ----------------------------------------
 
     string telTemporal;
     bool telefonoValido = false;
@@ -162,6 +219,9 @@ void ingresarAlumno() {
     cout << "Nombre:     " << registrar[contadorAlumnos - 1].nombre << " "
          << registrar[contadorAlumnos - 1].apellido << "\n";
     cout << "Carrera:    " << registrar[contadorAlumnos - 1].carrera << "\n";
+    cout << "Semestre:   " << registrar[contadorAlumnos - 1].semestre << "\n";
+    cout << "Cursos:     " << registrar[contadorAlumnos - 1].cursosAsignados
+         << "\n";
     cout << "Telefono:   " << registrar[contadorAlumnos - 1].telefono << "\n";
     cout << "Direccion:  " << registrar[contadorAlumnos - 1].direccion << "\n";
     cout << "Fecha/Hora: " << registrar[contadorAlumnos - 1].fechaHora << "\n";

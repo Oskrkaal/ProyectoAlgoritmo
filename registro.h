@@ -13,6 +13,8 @@ struct Estudiante {
   string telefono;
   string direccion;
   string fechaHora;
+  int semestre;
+  string cursosAsignados;
 };
 
 // Declaración de variables globales para compartir entre archivos

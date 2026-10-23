@@ -40,11 +40,6 @@ void consultarAlumno() {
     system("clear");
 
     if (opcion == 1) {
-      // ====================================================================================
-      // REQUERIMIENTO FUNCIONAL 4 (RF04): Búsqueda de alumnos por nombre
-      // mediante cadenas. Utiliza la función find() de la librería <string>
-      // para buscar coincidencias parciales.
-      // ====================================================================================
       string nombreBuscar;
       cout << "\n================ BUSQUEDA DE ESTUDIANTE ================\n";
       cout << "Ingrese el nombre o apellido a buscar (puede ser parcial): ";
@@ -56,22 +51,22 @@ void consultarAlumno() {
       cout << "\n=============================================================="
               "==========================================================\n";
       cout << "  CARNE       NOMBRES               APELLIDOS             "
-              "CARRERA                TELEFONO     DIRECCION\n";
+              "CARRERA        SEM   TELEFONO     CURSOS ASIGNADOS\n";
       cout << "================================================================"
               "========================================================\n";
 
       for (int i = 0; i < contadorAlumnos; i++) {
-        // Se evalúa si la cadena ingresada existe dentro del nombre o del
-        // apellido
         if (registrar[i].nombre.find(nombreBuscar) != string::npos ||
             registrar[i].apellido.find(nombreBuscar) != string::npos) {
 
           cout << "  " << left << setw(10) << registrar[i].carne << "  "
                << setw(20) << registrar[i].nombre << "  " << setw(20)
-               << registrar[i].apellido << "  " << setw(21)
-               << registrar[i].carrera << "  " << setw(11)
+               << registrar[i].apellido << "  " << setw(13)
+               << registrar[i].carrera << "  " << setw(4)
+               << registrar[i].semestre << "  " << setw(11)
                << registrar[i].telefono << "  "
-               << registrar[i].direccion.substr(0, 21) << "\n";
+               << registrar[i].cursosAsignados.substr(0, 30)
+               << "...\n"; // Se recorta a 30 caracteres para no romper la tabla
           encontrado = true;
         }
       }
@@ -84,28 +79,23 @@ void consultarAlumno() {
       }
 
     } else if (opcion == 2) {
-      // ====================================================================================
-      // REQUERIMIENTO FUNCIONAL 5 (RF05): Listado formateado de alumnos
-      // matriculados. Recorre el arreglo completo e imprime usando los
-      // manipuladores setw y left de <iomanip>.
-      // ====================================================================================
       cout << "\n\t\t\t============================================\n";
-      cout << "\t\t\t        LISTADO GENERAL DE ALUMNOS          \n";
+      cout << "\t\t\t         LISTADO GENERAL DE ALUMNOS         \n";
       cout << "\t\t\t============================================\n";
       cout << "\n=============================================================="
               "==========================================================\n";
       cout << "  CARNE       NOMBRES               APELLIDOS             "
-              "CARRERA                TELEFONO     DIRECCION\n";
+              "CARRERA        SEM   TELEFONO     CURSOS ASIGNADOS\n";
       cout << "================================================================"
               "========================================================\n";
 
       for (int i = 0; i < contadorAlumnos; i++) {
         cout << "  " << left << setw(10) << registrar[i].carne << "  "
              << setw(20) << registrar[i].nombre << "  " << setw(20)
-             << registrar[i].apellido << "  " << setw(21)
-             << registrar[i].carrera << "  " << setw(11)
-             << registrar[i].telefono << "  "
-             << registrar[i].direccion.substr(0, 21) << "\n";
+             << registrar[i].apellido << "  " << setw(13)
+             << registrar[i].carrera << "  " << setw(4) << registrar[i].semestre
+             << "  " << setw(11) << registrar[i].telefono << "  "
+             << registrar[i].cursosAsignados.substr(0, 30) << "...\n";
       }
       cout << "================================================================"
               "========================================================\n";
