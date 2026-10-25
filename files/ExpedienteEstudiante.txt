@@ -8,3 +8,4 @@ Carne	Nombres	Apellidos	Carrera	Telefono	Direccion	Fecha/Hora
 0007	Carlos	Villagran	Sistemas	89765434	Carcha	7	Pendiente de asignar (Semestre sin mapear)	20/10/2026 22:04:36
 0008	MAteo	Sis	Sistemas	98765432	Tucuru	5	Electronica Analogica, Emprendedores de Negocios, Estadistica II, Metodos Numericos, Programacion III	20/10/2026 22:07:08
 0009	Paola	Vasquez	Sistemas	73456345	Tucuru	3	Calculo I, Derecho Informatico, Fisica I, Proceso Administrativo, Programacion I	20/10/2026 23:35:20
+0010	Cesia 	Rodriguez	Medicina	87645642	Carcha	3	Anatomia I, Bioquimica I, Fisica Medica II, Histologia I, Investigacion II, Realidad Nacional, Salud Mental III Des. Psicolog. del Niño y del Adolescente, Semiologia I	25/10/2026 00:13:15
