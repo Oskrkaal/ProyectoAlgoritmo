@@ -1,14 +1,28 @@
+// ============================================================================
+//  menu.cpp - RF11: menu principal y punto de entrada (main)
+//  Aqui se crea la UNICA instancia de Academia y se pasa por referencia a
+//  cada modulo. No hay variables globales (RNF03).
+// ============================================================================
 #include "registro.h"
 #include <cstdlib>
 #include <iostream>
 
 using namespace std;
 
-void mostrarMenu() {
+// Crea la carpeta "files" si no existe (el expediente y las actas van ahi)
+static void asegurarCarpetaDatos() {
+#ifdef _WIN32
+  system("if not exist files mkdir files");
+#else
+  system("mkdir -p files");
+#endif
+}
+
+void mostrarMenu(Academia &a) {
   int opcion = 0;
 
   do {
-    system("clear");
+    limpiarPantalla();
     cout << "-----------------------------------------------------" << endl;
     cout << "                  MENU PRINCIPAL                     " << endl;
     cout << "-----------------------------------------------------" << endl;
@@ -17,7 +31,7 @@ void mostrarMenu() {
     cout << " 3. CONSULTAR ESTUDIANTES" << endl;
     cout << " 4. INGRESAR NOTAS" << endl;
     cout << " 5. REPORTES" << endl;
-    cout << " 6. FINALIZAR CICLO" << endl;
+    cout << " 6. FINALIZAR CICLO (REINICIAR NOTAS)" << endl;
     cout << " 7. ELIMINAR DEL SISTEMA" << endl;
     cout << " 8. SALIR" << endl;
     cout << "----------------------------------------------------" << endl;
@@ -32,29 +46,29 @@ void mostrarMenu() {
       continue;
     }
 
-    system("clear");
+    limpiarPantalla();
     switch (opcion) {
     case 1:
-      ingresarAlumno();
+      ingresarAlumno(a);
       break;
     case 2:
-      editarAlumno();
+      editarAlumno(a);
       break;
     case 3:
-      consultarAlumno();
+      consultarAlumno(a);
       break;
     case 4:
-      cout << "--- INGRESAR NOTAS ---\n";
+      menuNotas(a); // Modulo 2: ingreso de notas (RF08, RF09, RF06)
       break;
     case 5:
-      cout << "--- REPORTES ---\n";
+      reportes(a); // Matriz de notas + cuadro de honor (RF10, RF12, RF13)
       break;
     case 6:
-      cout << "--- FINALIZAR CICLO ---\n";
+      reiniciarMatrizNotasCiclo(a); // RF15 (reinicio.cpp)
       break;
     case 7:
       cout << "--- ELIMINAR DEL SISTEMA ---\n";
-      eliminarAlumno();
+      eliminarAlumno(a);
       break;
     case 8:
       cout << "\nApagando sistemas...\n";
@@ -73,8 +87,13 @@ void mostrarMenu() {
 }
 
 int main() {
-  // cargarDesdeArchivo(); // Descomentar cuando implementemos la carga inicial
-  cargarDesdeArchivo();
-  mostrarMenu();
+  Academia academia;         // unico estado del sistema (local a main)
+  iniciarAcademia(academia); // alumnos = 0, matriz de notas en 0
+  asegurarCarpetaDatos();
+
+  cargarDesdeArchivo(academia); // RF07: expediente de estudiantes
+  cargarActas(academia);        // RF07: actas (requiere alumnos ya cargados)
+
+  mostrarMenu(academia);
   return 0;
 }

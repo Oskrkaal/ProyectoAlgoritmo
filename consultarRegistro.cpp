@@ -5,11 +5,11 @@
 
 using namespace std;
 
-void consultarAlumno() {
+void consultarAlumno(const Academia &a) {
   int opcion;
 
   do {
-    system("clear");
+    limpiarPantalla();
     cout << "\n\t\t\t============================================\n";
     cout << "\t\t\t            MODULO DE CONSULTAS             \n";
     cout << "\t\t\t============================================\n";
@@ -28,7 +28,7 @@ void consultarAlumno() {
     if (opcion == 3)
       break;
 
-    if (contadorAlumnos == 0) {
+    if (a.cantidad == 0) {
       cout << "\n[INFO] La base de datos esta vacia. No hay alumnos "
               "registrados.\n";
       cout << "Presione Enter para continuar...";
@@ -37,7 +37,7 @@ void consultarAlumno() {
       continue;
     }
 
-    system("clear");
+    limpiarPantalla();
 
     if (opcion == 1) {
       string nombreBuscar;
@@ -55,17 +55,17 @@ void consultarAlumno() {
       cout << "================================================================"
               "========================================================\n";
 
-      for (int i = 0; i < contadorAlumnos; i++) {
-        if (registrar[i].nombre.find(nombreBuscar) != string::npos ||
-            registrar[i].apellido.find(nombreBuscar) != string::npos) {
+      for (int i = 0; i < a.cantidad; i++) {
+        if (a.alumnos[i].nombre.find(nombreBuscar) != string::npos ||
+            a.alumnos[i].apellido.find(nombreBuscar) != string::npos) {
 
-          cout << "  " << left << setw(10) << registrar[i].carne << "  "
-               << setw(20) << registrar[i].nombre << "  " << setw(20)
-               << registrar[i].apellido << "  " << setw(13)
-               << registrar[i].carrera << "  " << setw(4)
-               << registrar[i].semestre << "  " << setw(11)
-               << registrar[i].telefono << "  "
-               << registrar[i].cursosAsignados.substr(0, 30)
+          cout << "  " << left << setw(10) << a.alumnos[i].carne << "  "
+               << setw(20) << a.alumnos[i].nombre << "  " << setw(20)
+               << a.alumnos[i].apellido << "  " << setw(13)
+               << a.alumnos[i].carrera << "  " << setw(4)
+               << a.alumnos[i].semestre << "  " << setw(11)
+               << a.alumnos[i].telefono << "  "
+               << a.alumnos[i].cursosAsignados.substr(0, 30)
                << "...\n"; // Se recorta a 30 caracteres para no romper la tabla
           encontrado = true;
         }
@@ -89,17 +89,17 @@ void consultarAlumno() {
       cout << "================================================================"
               "========================================================\n";
 
-      for (int i = 0; i < contadorAlumnos; i++) {
-        cout << "  " << left << setw(10) << registrar[i].carne << "  "
-             << setw(20) << registrar[i].nombre << "  " << setw(20)
-             << registrar[i].apellido << "  " << setw(13)
-             << registrar[i].carrera << "  " << setw(4) << registrar[i].semestre
-             << "  " << setw(11) << registrar[i].telefono << "  "
-             << registrar[i].cursosAsignados.substr(0, 30) << "...\n";
+      for (int i = 0; i < a.cantidad; i++) {
+        cout << "  " << left << setw(10) << a.alumnos[i].carne << "  "
+             << setw(20) << a.alumnos[i].nombre << "  " << setw(20)
+             << a.alumnos[i].apellido << "  " << setw(13)
+             << a.alumnos[i].carrera << "  " << setw(4) << a.alumnos[i].semestre
+             << "  " << setw(11) << a.alumnos[i].telefono << "  "
+             << a.alumnos[i].cursosAsignados.substr(0, 30) << "...\n";
       }
       cout << "================================================================"
               "========================================================\n";
-      cout << "Total de matriculados: " << contadorAlumnos
+      cout << "Total de matriculados: " << a.cantidad
            << " estudiante(s).\n";
     }
 

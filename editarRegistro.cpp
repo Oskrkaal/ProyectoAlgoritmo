@@ -7,26 +7,27 @@
 
 using namespace std;
 
-void reescribirArchivo() {
+void reescribirArchivo(const Academia &a) {
   ofstream archivo(ARCHIVO);
   if (!archivo.is_open()) {
     cout << "[ERROR] No se pudo abrir el archivo para guardar.\n";
     return;
   }
 
-  archivo << "Carne\tNombres\tApellidos\tCarrera\tTelefono\tDireccion\tFecha/"
-             "Hora\n";
+  archivo << "Carne\tNombres\tApellidos\tCarrera\tTelefono\tDireccion\tSemestre"
+             "\tCursos\tFecha/Hora\n";
 
-  for (int i = 0; i < contadorAlumnos; i++) {
-    archivo << registrar[i].carne << "\t" << registrar[i].nombre << "\t"
-            << registrar[i].apellido << "\t" << registrar[i].carrera << "\t"
-            << registrar[i].telefono << "\t" << registrar[i].direccion << "\t"
-            << registrar[i].fechaHora << "\n";
+  for (int i = 0; i < a.cantidad; i++) {
+    archivo << a.alumnos[i].carne << "\t" << a.alumnos[i].nombre << "\t"
+            << a.alumnos[i].apellido << "\t" << a.alumnos[i].carrera << "\t"
+            << a.alumnos[i].telefono << "\t" << a.alumnos[i].direccion << "\t"
+            << a.alumnos[i].semestre << "\t" << a.alumnos[i].cursosAsignados
+            << "\t" << a.alumnos[i].fechaHora << "\n";
   }
   archivo.close();
 }
 
-bool validarTelefono(string &tel) {
+static bool validarTelefono(string &tel) {
   tel.clear();
   bool valido = false;
 
@@ -56,10 +57,10 @@ bool validarTelefono(string &tel) {
   return valido;
 }
 
-void editarAlumno() {
-  system("clear");
+void editarAlumno(Academia &a) {
+  limpiarPantalla();
 
-  if (contadorAlumnos == 0) {
+  if (a.cantidad == 0) {
     cout << "\n[INFO] No hay alumnos en el sistema. Asegurese de registrarlos "
             "primero.\n";
     return;
@@ -92,16 +93,16 @@ void editarAlumno() {
   cout << "===================================================================="
           "====================================================\n";
 
-  for (int i = 0; i < contadorAlumnos; i++) {
-    if (registrar[i].carrera == carreraBuscar) {
-      cout << "  " << left << setw(10) << registrar[i].carne << "  " << setw(20)
-           << registrar[i].nombre << "  " << setw(20) << registrar[i].apellido
+  for (int i = 0; i < a.cantidad; i++) {
+    if (a.alumnos[i].carrera == carreraBuscar) {
+      cout << "  " << left << setw(10) << a.alumnos[i].carne << "  " << setw(20)
+           << a.alumnos[i].nombre << "  " << setw(20) << a.alumnos[i].apellido
            << "  " << setw(11)
-           << registrar[i].telefono
+           << a.alumnos[i].telefono
            // Substr evita que direcciones muy largas rompan la alineación de la
            // tabla
-           << "  " << setw(22) << registrar[i].direccion.substr(0, 21) << "  "
-           << registrar[i].fechaHora << "\n";
+           << "  " << setw(22) << a.alumnos[i].direccion.substr(0, 21) << "  "
+           << a.alumnos[i].fechaHora << "\n";
       hayAlumnos = true;
     }
   }
@@ -119,9 +120,9 @@ void editarAlumno() {
   cin >> carneBuscar;
 
   int idx = -1;
-  for (int i = 0; i < contadorAlumnos; i++) {
-    if (registrar[i].carne == carneBuscar &&
-        registrar[i].carrera == carreraBuscar) {
+  for (int i = 0; i < a.cantidad; i++) {
+    if (a.alumnos[i].carne == carneBuscar &&
+        a.alumnos[i].carrera == carreraBuscar) {
       idx = i;
       break;
     }
@@ -134,49 +135,60 @@ void editarAlumno() {
   }
 
   // --- EDICIÓN DEL REGISTRO ---
-  system("clear");
+  limpiarPantalla();
   cout << "\n--- DATOS ENCONTRADOS ---\n";
-  cout << "Carne:     " << registrar[idx].carne << "\n";
-  cout << "Nombres:   " << registrar[idx].nombre << "\n";
-  cout << "Apellidos: " << registrar[idx].apellido << "\n";
-  cout << "Carrera:   " << registrar[idx].carrera << "\n";
-  cout << "Telefono:  " << registrar[idx].telefono << "\n";
-  cout << "Direccion: " << registrar[idx].direccion << "\n";
-  cout << "Fecha:     " << registrar[idx].fechaHora << "\n";
+  cout << "Carne:     " << a.alumnos[idx].carne << "\n";
+  cout << "Nombres:   " << a.alumnos[idx].nombre << "\n";
+  cout << "Apellidos: " << a.alumnos[idx].apellido << "\n";
+  cout << "Carrera:   " << a.alumnos[idx].carrera << "\n";
+  cout << "Telefono:  " << a.alumnos[idx].telefono << "\n";
+  cout << "Direccion: " << a.alumnos[idx].direccion << "\n";
+  cout << "Fecha:     " << a.alumnos[idx].fechaHora << "\n";
 
   int opcion;
   do {
     cout << "\n--- ELIGE QUE CAMBIAR ---\n";
     cout << "1. Nombres\n2. Apellidos\n3. Carrera\n4. Telefono\n5. "
             "Direccion\n6. Guardar y volver al menu\nOpcion: ";
-    cin >> opcion;
+    if (!(cin >> opcion)) {
+      cin.clear();
+      cin.ignore(1000, '\n');
+      opcion = 0;
+    }
 
     switch (opcion) {
     case 1:
       cout << "Nuevo nombre: ";
       cin.ignore();
-      getline(cin, registrar[idx].nombre);
+      getline(cin, a.alumnos[idx].nombre);
       break;
     case 2:
       cout << "Nuevo apellido: ";
       cin.ignore();
-      getline(cin, registrar[idx].apellido);
+      getline(cin, a.alumnos[idx].apellido);
       break;
     case 3:
       cout << "Nueva carrera: ";
       cin.ignore();
-      getline(cin, registrar[idx].carrera);
+      getline(cin, a.alumnos[idx].carrera);
+      // Al cambiar de carrera cambian los cursos: se pide el semestre, se
+      // reasignan los cursos y se descartan las notas de los cursos anteriores.
+      pedirSemestreYCursos(a.alumnos[idx]);
+      limpiarNotasAlumno(a, idx);
+      cout << "[AVISO] Cursos reasignados. Se borraron las notas anteriores "
+              "del alumno.\n";
       break;
     case 4:
-      validarTelefono(registrar[idx].telefono);
+      validarTelefono(a.alumnos[idx].telefono);
       break;
     case 5:
       cout << "Nueva direccion: ";
       cin.ignore();
-      getline(cin, registrar[idx].direccion);
+      getline(cin, a.alumnos[idx].direccion);
       break;
     case 6:
-      reescribirArchivo();
+      reescribirArchivo(a);
+      exportarActa(a); // por si cambio la carrera y se limpiaron notas
       cout << "\n[OK] Cambios guardados exitosamente.\n";
       break;
     default:

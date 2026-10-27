@@ -5,10 +5,10 @@
 
 using namespace std;
 
-void eliminarAlumno() {
-  system("clear");
+void eliminarAlumno(Academia &a) {
+  limpiarPantalla();
 
-  if (contadorAlumnos == 0) {
+  if (a.cantidad == 0) {
     cout << "\n[INFO] No hay alumnos en el sistema. Asegurese de registrarlos "
             "primero.\n";
     return;
@@ -36,10 +36,10 @@ void eliminarAlumno() {
   cout << "  CARNE       NOMBRES               APELLIDOS\n";
   cout << "=================================================================\n";
 
-  for (int i = 0; i < contadorAlumnos; i++) {
-    if (registrar[i].carrera == carreraBuscar) {
-      cout << "  " << left << setw(10) << registrar[i].carne << "  " << setw(20)
-           << registrar[i].nombre << "  " << registrar[i].apellido << "\n";
+  for (int i = 0; i < a.cantidad; i++) {
+    if (a.alumnos[i].carrera == carreraBuscar) {
+      cout << "  " << left << setw(10) << a.alumnos[i].carne << "  " << setw(20)
+           << a.alumnos[i].nombre << "  " << a.alumnos[i].apellido << "\n";
       hayAlumnos = true;
     }
   }
@@ -56,9 +56,9 @@ void eliminarAlumno() {
   cin >> carneBuscar;
 
   int idx = -1;
-  for (int i = 0; i < contadorAlumnos; i++) {
-    if (registrar[i].carne == carneBuscar &&
-        registrar[i].carrera == carreraBuscar) {
+  for (int i = 0; i < a.cantidad; i++) {
+    if (a.alumnos[i].carne == carneBuscar &&
+        a.alumnos[i].carrera == carreraBuscar) {
       idx = i;
       break;
     }
@@ -70,26 +70,38 @@ void eliminarAlumno() {
     return;
   }
 
-  system("clear");
+  limpiarPantalla();
   cout << "\n--- ESTUDIANTE ENCONTRADO ---\n";
-  cout << "Carne:     " << registrar[idx].carne << "\n";
-  cout << "Nombres:   " << registrar[idx].nombre << " "
-       << registrar[idx].apellido << "\n";
-  cout << "Carrera:   " << registrar[idx].carrera << "\n";
+  cout << "Carne:     " << a.alumnos[idx].carne << "\n";
+  cout << "Nombres:   " << a.alumnos[idx].nombre << " "
+       << a.alumnos[idx].apellido << "\n";
+  cout << "Carrera:   " << a.alumnos[idx].carrera << "\n";
 
   string confirmacion;
-  cout << "\n[ADVERTENCIA CRITICA] ¿Esta absolutamente seguro de ELIMINAR este "
+  cout << "\n[ADVERTENCIA CRITICA] Esta absolutamente seguro de ELIMINAR este "
           "registro de forma permanente? (s/n): ";
   cin >> confirmacion;
 
   if (confirmacion == "s" || confirmacion == "S") {
-    for (int i = idx; i < contadorAlumnos - 1; i++) {
-      registrar[i] = registrar[i + 1];
+    // Se desplazan JUNTOS el alumno y TODAS sus filas de la matriz de notas
+    // (una por curso), para que las filas del alumno i sigan siendo suyas.
+    for (int i = idx; i < a.cantidad - 1; i++) {
+      a.alumnos[i] = a.alumnos[i + 1];
+      for (int c = 0; c < MAX_CURSOS; c++) {
+        int destino = filaNota(i, c);
+        int origen = filaNota(i + 1, c);
+        for (int j = 0; j < EVAL; j++)
+          a.notas[destino][j] = a.notas[origen][j];
+        a.conNotas[destino] = a.conNotas[origen];
+      }
     }
 
-    contadorAlumnos--;
-    reescribirArchivo(); // <-- LLAMA A LA FUNCIÓN QUE ESTÁ EN
-                         // EDITARREGISTRO.CPP
+    // El ultimo alumno queda libre: se limpian sus filas (sin notas fantasma).
+    limpiarNotasAlumno(a, a.cantidad - 1);
+
+    a.cantidad--;
+    reescribirArchivo(a); // expediente (definida en editarRegistro.cpp)
+    exportarActa(a);      // acta de notas (definida en notas.cpp)
 
     cout << "\n[OK] El estudiante ha sido dado de baja y eliminado "
             "exitosamente del archivo.\n";

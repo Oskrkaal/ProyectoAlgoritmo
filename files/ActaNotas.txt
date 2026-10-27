@@ -1,0 +1,1 @@
+Carne	Curso	Parcial1	Parcial2	Tareas	Zona	ExamenFinal	NotaFinal	Estado	FechaEmision	FechaRegistro
