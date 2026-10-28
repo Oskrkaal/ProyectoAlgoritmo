@@ -24,7 +24,7 @@ void mostrarMenu(Academia &a) {
   do {
     limpiarPantalla();
     cout << "-----------------------------------------------------" << endl;
-    cout << "                  MENU PRINCIPAL                     " << endl;
+    cout << "           MENU PRINCIPAL / SisUniversidad           " << endl;
     cout << "-----------------------------------------------------" << endl;
     cout << " 1. INGRESAR ESTUDIANTES (AL SISTEMA)" << endl;
     cout << " 2. MODIFICAR DATOS DE ESTUDIANTES" << endl;

@@ -14,10 +14,12 @@
 using namespace std;
 
 // ---------------------------------------------------------------- Constantes
-const int TAM = 50;  // maximo de alumnos (filas de la matriz de notas)
-const int EVAL = 4;  // columnas: 0=Parcial 1, 1=Parcial 2, 2=Actividades, 3=Examen
-const int MAX_CURSOS = 8;        // maximo de cursos por semestre (Medicina/Arq.)
-const int FILAS = TAM * MAX_CURSOS; // filas de la matriz: una por (alumno, curso)
+const int TAM = 50; // maximo de alumnos (filas de la matriz de notas)
+const int EVAL =
+    4; // columnas: 0=Parcial 1, 1=Parcial 2, 2=Actividades, 3=Examen
+const int MAX_CURSOS = 8; // maximo de cursos por semestre (Medicina/Arq.)
+const int FILAS =
+    TAM * MAX_CURSOS; // filas de la matriz: una por (alumno, curso)
 const string ARCHIVO = "files/ExpedienteEstudiante.txt";
 const string ARCHIVO_ACTAS = "files/ActaNotas.txt";
 
